@@ -1,7 +1,7 @@
 package com.example.myapplication.utils
 
 object ConstUtil {
-  val BASEURL = "http://192.168.21.164";
+  val BASEURL = "http://192.168.202.40";
 
   val apiBackend =
     "${BASEURL}:4001/v1/"

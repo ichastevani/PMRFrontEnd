@@ -135,12 +135,14 @@ fun MetaMaskConnectScreen(
       // Box putih dengan konten (judul, teks, dan tombol connect)
       Card(
         modifier = Modifier
-          .align(Alignment.BottomCenter) // Menempel di bawah layar
+          .align(Alignment.BottomCenter)
           .fillMaxWidth()
-          .height(280.dp) // Atur tinggi box sesuai keinginan
-          .clip(RoundedCornerShape(20.dp)), // Membulatkan sudut
+          .height(280.dp)
+          .padding(bottom = 32.dp) // Tambahan ini agar Card tidak nempel bawah
+          .clip(RoundedCornerShape(20.dp)),
         colors = CardDefaults.cardColors(containerColor = Color.White)
-      ) {
+      )
+      {
         Column(
           modifier = Modifier
             .fillMaxWidth()
@@ -150,10 +152,14 @@ fun MetaMaskConnectScreen(
           // Judul pertama
           Text(
             text = "Your Health, Your Control",
-            fontSize = 30.sp,
+            fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 5.dp) // Menambahkan jarak lebih besar ke bawah
+            textAlign = TextAlign.Center, // Tambahan ini
+            modifier = Modifier
+              .padding(bottom = 5.dp)
+              .fillMaxWidth() // Supaya align center berfungsi
           )
+
 
           Spacer(modifier = Modifier.height(12.dp)) // Menambahkan jarak antara kedua teks
 
@@ -166,25 +172,41 @@ fun MetaMaskConnectScreen(
           )
 
           // Tombol connect
+//          Button(
+//            onClick = { metaMaskViewModel.eventSink(EventSinkMetaMask.Connect) },
+//            modifier = Modifier
+//              .fillMaxWidth() // Memperpanjang panjang button
+//              .border(
+//                width = 2.dp, // Lebar border
+//                color = Color(0xFF2196F3), // Warna biru pada border
+//                shape = RoundedCornerShape(12.dp) // Membulatkan sudut
+//              )
+//              .padding(2.dp), // Memberikan padding di dalam tombol
+//            contentPadding = PaddingValues(0.dp), // Menghilangkan padding internal default
+//            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent) // Pastikan tidak ada warna latar belakang
+//          ) {
+//            Text(
+//              text = "Connect",
+//              color = Color(0xFF2196F3), // Warna teks biru
+//              fontSize = 16.sp,
+//            )
+//          }
           Button(
             onClick = { metaMaskViewModel.eventSink(EventSinkMetaMask.Connect) },
             modifier = Modifier
-              .fillMaxWidth() // Memperpanjang panjang button
-              .border(
-                width = 2.dp, // Lebar border
-                color = Color(0xFF2196F3), // Warna biru pada border
-                shape = RoundedCornerShape(12.dp) // Membulatkan sudut
-              )
-              .padding(2.dp), // Memberikan padding di dalam tombol
-            contentPadding = PaddingValues(0.dp), // Menghilangkan padding internal default
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent) // Pastikan tidak ada warna latar belakang
+              .fillMaxWidth()
+              .height(50.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5A9EFF)) // Warna biru solid
           ) {
             Text(
               text = "Connect",
-              color = Color(0xFF2196F3), // Warna teks biru
+              color = Color.White,
               fontSize = 16.sp,
+              fontWeight = FontWeight.Medium
             )
           }
+
 
         }
       }

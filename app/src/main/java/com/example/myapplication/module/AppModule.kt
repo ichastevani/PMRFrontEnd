@@ -16,7 +16,7 @@ internal object AppModule {
     fun provideDappMetadata(@ApplicationContext context: Context): DappMetadata {
         val dappMetadata = DappMetadata(
             "Mediva",
-            "https://${context.applicationInfo.name}.com"
+            "https://192.168.202.40${context.applicationInfo.name}.com"
         )
         return dappMetadata
     }

@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -47,6 +49,7 @@ import com.example.myapplication.ui.viewModels.PMRViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun HomeScreen(
@@ -97,66 +100,44 @@ fun HomeUI(
   navController: NavHostController,
   userData: UserData
 ) {
-  val images = listOf(
-    R.drawable.gambarsatu to "Access anytime, anywhere",
-    R.drawable.gambardua to "Powered by Blockchain & IPFS",
-    R.drawable.gambartiga to "Securing your data",
-    R.drawable.gambarempat to "Data securely backed up with decentralized technology"
-  )
-  val pagerState = rememberPagerState()
+  Box(
+    modifier = Modifier
+      .fillMaxWidth()
+      .fillMaxHeight() // Tambahkan ini
+  ) {
+    // Background Gambar Fullscreen
+    Image(
+      painter = painterResource(id = R.drawable.dashboard),
+      contentDescription = null,
+      modifier = Modifier.matchParentSize(),
+      contentScale = ContentScale.Crop
+    )
 
-  Column {
-    TopAppBarUI(stringResource(R.string.app_name), navController)
-    Box(
+    // Konten di atas gambar
+    Column(
       modifier = Modifier
-        .weight(1f)
-        .fillMaxWidth()
-        .verticalScroll(rememberScrollState())
-        .padding(16.dp),
+        .fillMaxSize()
+        .padding(top = 32.dp) // supaya tidak mentok ke atas
     ) {
-      Text(
-        text = "Hi, ${userData.name}!",
-        fontSize = 26.sp,
-        modifier = Modifier.padding(bottom = 16.dp)
-      )
-      Image(
-        painter = painterResource(id = R.drawable.home), // Ganti dengan path gambar yang sesuai
-        contentDescription = "Home Image",
-        modifier = Modifier
-          .fillMaxWidth() // Gambar mengisi lebar layar
-          .height(310.dp) // Menyesuaikan tinggi gambar
-          .padding(top = 18.dp) // Menambahkan jarak atas agar tidak tumpang tindih dengan teks
-      )
+      TopAppBarUI(stringResource(R.string.app_name), navController)
 
-      LazyRow(
+      Column(
         modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 270.dp) // Memberikan jarak dari gambar utama
+          .weight(1f)
+          .padding(horizontal = 16.dp)
       ) {
-        items(images) { pair ->
-          Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(
-              painter = painterResource(id = pair.first),
-              contentDescription = "Image",
-              modifier = Modifier
-                .width(200.dp) // Lebar gambar
-                .height(200.dp) // Tinggi gambar
-                .padding(end = 16.dp) // Memberikan jarak antar gambar
-            )
-            Text(
-              text = pair.second,
-              textAlign = TextAlign.Center, // Pusatkan teks
-              modifier = Modifier.width(160.dp) // Sesuaikan lebar teks dengan lebar gambar
-            )  // Menambahkan teks di bawah gambar
-          }
-        }
+        Text(
+          text = "Hi, ${userData.name}!",
+          fontSize = 26.sp,
+          modifier = Modifier.padding(bottom = 16.dp)
+        )
       }
-
+      // Bottom Navigation
+      BottomNavigationBarUI(navController, userData.role)
     }
-    // Bottom Navigation
-    BottomNavigationBarUI(navController, userData.role)
   }
 }
+
 
 
 @Preview(showBackground = true)
