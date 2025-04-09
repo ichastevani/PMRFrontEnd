@@ -8,16 +8,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
@@ -40,14 +43,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
@@ -66,6 +72,7 @@ import com.example.myapplication.ui.viewModels.PMRUserPermissionUiState
 import com.example.myapplication.ui.viewModels.PMRViewModel
 import com.example.myapplication.utils.ToolsUtil.getFileFromUri
 import com.example.myapplication.R
+import androidx.compose.material.icons.filled.ArrowDropDown
 import java.io.File
 
 @Composable
@@ -195,8 +202,8 @@ fun AddHealthRecordUI(
   // Untuk select record type
   val recordTypeOptions = listOf(
     "Laboratory Test", "Vaccination", "Radiology",
-    "Health Record", "Health Facility",
-    "Treatment History", "Others"
+    "Physical Examination", "Therapies",
+    "Medical Procedures", "Specialist Consultations", "Medications ", "Mental Health Records", "Medical Certificates", "y"
   )
   var expanded by remember { mutableStateOf(false) }
   var selectedOption by remember { mutableStateOf(recordTypeOptions[0]) }
@@ -238,29 +245,51 @@ fun AddHealthRecordUI(
         .padding(16.dp),
     ) {
       Column {
-
         if(role == "Doctor"){
           Text(
+
             text = "Tambah Health Record",
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
           )
         }else{
+          Row(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(vertical = 8.dp), // Menambahkan padding vertical agar tidak terlalu rapat
+            verticalAlignment = Alignment.CenterVertically // Untuk memastikan keduanya ter-align dengan baik secara vertikal
+          ) {
+            Text(
+              text = "Nama Pasien: ",
+              style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            )
+            Spacer(modifier = Modifier.width(5.dp)) // Menambahkan jarak antara label dan nama pasien
+            Text(
+              text = targetUser.name,
+              style = MaterialTheme.typography.bodyMedium,
+            )
+          }
+
+
+          Divider(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(bottom = 12.dp)
+          )
           Text(
-            text = targetUser.name,
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            text = "(Lengkapi data berikut untuk menambahkan rekam medis baru: pilih jenis rekam medis, beri deskripsi, dan unggah gambar atau file PDF terkait)",
+            style = MaterialTheme.typography.bodySmall.copy(
+              fontStyle = FontStyle.Italic,
+              color = Color.Red
+            )
+
+
           )
         }
 
         Spacer(modifier = Modifier.padding(bottom = 8.dp))
-        Divider(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp)
-        )
+
 
         // Select record type
         Column {
@@ -276,6 +305,10 @@ fun AddHealthRecordUI(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth()
           ) {
+            Icon(
+              imageVector = Icons.Filled.ArrowDropDown,
+              contentDescription = "Drop-down Arrow",
+            )
             Text(selectedOption)
           }
 
