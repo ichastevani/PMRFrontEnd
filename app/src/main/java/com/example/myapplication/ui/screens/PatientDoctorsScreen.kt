@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -365,6 +366,7 @@ fun ItemPatientDoctorGrantedAccessUI(
       modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 4.dp),
+      colors = CardDefaults.cardColors(containerColor = White),
       shape = RoundedCornerShape(8.dp),
       elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -484,12 +486,13 @@ fun ItemPatientDoctorRequestAccessUI(
 
   Box(
     modifier = Modifier
-      .fillMaxWidth()
+      .fillMaxWidth(),
   ) {
     Card(
       modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 4.dp),
+      colors = CardDefaults.cardColors(containerColor = White),
       shape = RoundedCornerShape(8.dp),
       elevation = CardDefaults.cardElevation(4.dp)
     ) {

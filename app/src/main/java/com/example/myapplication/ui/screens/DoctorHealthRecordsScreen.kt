@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -183,13 +184,18 @@ fun DoctorHealthRecordsUI(
         .padding(16.dp)
     ) {
       Column {
-        Text(
-          text = targetUser.name,
-          style = MaterialTheme.typography.titleLarge,
-          textAlign = TextAlign.Center,
-          modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+        Row {
+          Text(text = "Nama Pasien: ", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
+          Spacer(modifier = Modifier.width(5.dp))
+          Text(text = targetUser.name, style = MaterialTheme.typography.bodyMedium)
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Row {
+          Text(text = "Tanggal Lahir: ", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
+          Spacer(modifier = Modifier.width(5.dp))
+          Text(text = targetUser.birthDate, style = MaterialTheme.typography.bodyMedium)
+        }
+        Spacer(modifier = Modifier.height(4.dp))
         Divider(
           modifier = Modifier
             .fillMaxWidth()
@@ -410,7 +416,7 @@ fun DoctorItemHealthRecordUI(
 @Preview(showBackground = true)
 @Composable
 fun PreviewDoctorHealthRecordsUI() {
-  val dummyUser = UserData("0x123", "John Doe", "1234567890", "Patient", "Test")
+  val dummyUser = UserData("0x123", "20-05-2000","Laguboti", "Patient", "3767328910")
 
   val dummyRecords = arrayListOf(
     DataHealthRecord(

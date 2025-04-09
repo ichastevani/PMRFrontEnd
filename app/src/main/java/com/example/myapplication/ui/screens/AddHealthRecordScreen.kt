@@ -6,16 +6,22 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -23,6 +29,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -42,13 +49,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import android.graphics.pdf.PdfRenderer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,6 +71,8 @@ import com.example.myapplication.network.request.RequestHealthRecordAdd
 import com.example.myapplication.network.response.UserData
 import com.example.myapplication.ui.PMRScreenEnum
 import com.example.myapplication.ui.components.BottomNavigationBarUI
+import androidx.compose.ui.graphics.asImageBitmap
+import android.graphics.Bitmap
 import com.example.myapplication.ui.components.LoadingUI
 import com.example.myapplication.ui.components.TopAppBarUI
 import com.example.myapplication.ui.components.TopAppBarWBackUI
@@ -73,6 +85,7 @@ import com.example.myapplication.ui.viewModels.PMRViewModel
 import com.example.myapplication.utils.ToolsUtil.getFileFromUri
 import com.example.myapplication.R
 import androidx.compose.material.icons.filled.ArrowDropDown
+import java.io.FileInputStream
 import java.io.File
 
 @Composable
@@ -203,7 +216,7 @@ fun AddHealthRecordUI(
   val recordTypeOptions = listOf(
     "Laboratory Test", "Vaccination", "Radiology",
     "Physical Examination", "Therapies",
-    "Medical Procedures", "Specialist Consultations", "Medications ", "Mental Health Records", "Medical Certificates", "y"
+    "Medical Procedures", "Specialist Consultations", "Medications ", "Mental Health Records", "Medical Certificates"
   )
   var expanded by remember { mutableStateOf(false) }
   var selectedOption by remember { mutableStateOf(recordTypeOptions[0]) }
@@ -229,6 +242,36 @@ fun AddHealthRecordUI(
     }
   }
 
+  // State untuk menyimpan bitmap preview PDF
+  var pdfPreviewBitmaps by remember { mutableStateOf<List<Bitmap>>(emptyList()) }
+
+  // Fungsi untuk menghasilkan bitmap preview dari PDF
+  fun generatePdfPreview(context: Context, uri: Uri) {
+    try {
+      context.contentResolver.openFileDescriptor(uri, "r")?.use { parcelFileDescriptor ->
+        PdfRenderer(parcelFileDescriptor).use { renderer ->
+          if (renderer.pageCount > 0) {
+              val bitmaps = mutableListOf<Bitmap>()
+              for (i in 0 until renderer.pageCount) {
+                  val page = renderer.openPage(i)
+                  val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
+                  page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                  bitmaps.add(bitmap)
+                  page.close()
+              }
+            pdfPreviewBitmaps = bitmaps
+          } else {
+              // Handle case where there are no pages
+              Log.e("PDFPreview", "No pages found in PDF")
+              pdfPreviewBitmaps = emptyList()// or set a default error bitmap
+           }
+        }
+      }
+    } catch (e: Exception) {
+      Log.e("PDFPreview", "Error generating PDF preview", e)
+      pdfPreviewBitmaps = emptyList()// or set a default error bitmap
+    }
+  }
   Column {
     // Top Navigation
     if(role == "Doctor"){
@@ -352,21 +395,66 @@ fun AddHealthRecordUI(
 
         // Ambil file
         Spacer(modifier = Modifier.padding(bottom = 16.dp))
-        OutlinedButton(
-          modifier = Modifier.fillMaxWidth(),
-          onClick = {
-            filePickerLauncher.launch(filterMimeTypes)
-          }
+        Card(
+          modifier = Modifier
+            .width(120.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .wrapContentSize()
+            .clickable {
+              // Aksi untuk memilih file
+              filePickerLauncher.launch(filterMimeTypes)
+            },
         ) {
-          Text(text = "Pilih File (PDF/Gambar)")
+          Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+          ) {
+            Column(
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.Center,
+              modifier = Modifier.fillMaxSize().padding(16.dp)
+            ) {
+              Icon(
+                painter = painterResource(id = R.drawable.add),
+                contentDescription = "Pilih File",
+                modifier = Modifier.size(40.dp)
+              )
+              Spacer(modifier = Modifier.height(8.dp))
+              Text(
+                text = "Pilih File",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center
+              )
+            }
+          }
         }
+
 
         selectedFileUri.value?.let { uri ->
           Spacer(modifier = Modifier.padding(bottom = 8.dp))
-          if (uri.toString().contains("document%")) {
-            Text(text = "File dipilih: PDF", fontWeight = FontWeight.Bold)
-          } else {
+          val isPdf = fileMimeType.value.equals("application/pdf", ignoreCase = true)
+          if (isPdf) {
+            LaunchedEffect(key1 = uri) {
+              generatePdfPreview(context, uri)
+            }
+            Text(text = "Preview PDF:", fontWeight = FontWeight.Bold)
+            LazyRow(modifier = Modifier.fillMaxWidth()) {
+              items(pdfPreviewBitmaps.size) { index ->
+                  Image(
+                      bitmap = pdfPreviewBitmaps[index].asImageBitmap(),
+                      contentDescription = "PDF Preview Page ${index + 1}",
+                      modifier = Modifier
+                        .width(200.dp)
+                        .aspectRatio(1f)
+                        .padding(8.dp)
+                  )
+              }
+
+            }
+          }else {
+            Text(text = "Preview Gambar:", fontWeight = FontWeight.Bold)
             Image(
+
               painter = rememberAsyncImagePainter(uri),
               contentDescription = "Gambar Terpilih",
               modifier = Modifier.size(200.dp)
