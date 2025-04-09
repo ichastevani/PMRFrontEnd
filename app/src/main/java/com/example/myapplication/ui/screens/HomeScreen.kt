@@ -1,11 +1,10 @@
 package com.example.myapplication.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -28,6 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -49,7 +53,6 @@ import com.example.myapplication.ui.viewModels.PMRViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun HomeScreen(
@@ -90,6 +93,7 @@ fun HomeScreen(
       userData!!
     )
   }else{
+
     LoadingUI()
   }
 }
@@ -100,44 +104,37 @@ fun HomeUI(
   navController: NavHostController,
   userData: UserData
 ) {
-  Box(
-    modifier = Modifier
-      .fillMaxWidth()
-      .fillMaxHeight() // Tambahkan ini
+
+
+  Column(
+    modifier = Modifier.fillMaxWidth()
   ) {
-    // Background Gambar Fullscreen
-    Image(
-      painter = painterResource(id = R.drawable.dashboard),
-      contentDescription = null,
-      modifier = Modifier.matchParentSize(),
-      contentScale = ContentScale.Crop
-    )
-
-    // Konten di atas gambar
-    Column(
+    TopAppBarUI(stringResource(R.string.app_name), navController)
+    Spacer(modifier = Modifier.height(0.dp)) // Add spacer between top app bar and content
+    Box (
       modifier = Modifier
-        .fillMaxSize()
-        .padding(top = 32.dp) // supaya tidak mentok ke atas
+        .weight(1f)
+        .fillMaxWidth().padding(top = 60.dp)
+        .paint( //change
+          painterResource(id = R.drawable.foto_dashboard_kedua),
+          contentScale = ContentScale.Crop,
+        ),
     ) {
-      TopAppBarUI(stringResource(R.string.app_name), navController)
-
-      Column(
+      Text(
+        text = "Hi, ${userData.name}!",
+        fontSize = 26.sp,
         modifier = Modifier
-          .weight(1f)
-          .padding(horizontal = 16.dp)
-      ) {
-        Text(
-          text = "Hi, ${userData.name}!",
-          fontSize = 26.sp,
-          modifier = Modifier.padding(bottom = 16.dp)
-        )
-      }
-      // Bottom Navigation
-      BottomNavigationBarUI(navController, userData.role)
+          .padding(16.dp)
+      )
+
+
     }
+
+
+    // Bottom Navigation
+    BottomNavigationBarUI(navController, userData.role)
   }
 }
-
 
 
 @Preview(showBackground = true)

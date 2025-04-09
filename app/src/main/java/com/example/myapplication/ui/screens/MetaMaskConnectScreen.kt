@@ -137,8 +137,7 @@ fun MetaMaskConnectScreen(
         modifier = Modifier
           .align(Alignment.BottomCenter)
           .fillMaxWidth()
-          .height(280.dp)
-          .padding(bottom = 32.dp) // Tambahan ini agar Card tidak nempel bawah
+          .height(250.dp)
           .clip(RoundedCornerShape(20.dp)),
         colors = CardDefaults.cardColors(containerColor = Color.White)
       )
